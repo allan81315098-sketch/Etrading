@@ -3,312 +3,246 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>E@trading - Trading Platform</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#0b1220;color:white;font-family:Arial,sans-serif}
-header{background:#142238;padding:18px;border-bottom:2px solid #10b981;display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:25px;font-weight:bold;color:#10b981}
-.container{max-width:850px;margin:25px auto;padding:15px}
-.card{background:#17243a;border:1px solid #293c55;border-radius:13px;padding:20px;margin-bottom:17px}
-h2,h3{margin-top:5px}
-.muted{color:#aab8ca}
-input{width:100%;padding:13px;margin:8px 0 15px;background:#0b1220;color:white;border:1px solid #43536b;border-radius:7px}
-label{font-size:14px;color:#d5deeb}
-button{padding:13px;background:#10b981;color:white;border:0;border-radius:7px;font-weight:bold;cursor:pointer;margin:5px 3px}
-.secondary{background:#30435c}
-.danger{background:#b93838}
-.full{width:100%}
-.hidden{display:none!important}
-.balance{font-size:36px;color:#10b981;font-weight:bold;margin:15px 0}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.stat{background:#0b1220;padding:15px;border-radius:9px}
-.stat strong{display:block;margin-top:9px;font-size:19px}
-.message{color:#36d399;line-height:1.5;overflow-wrap:anywhere}
-.error{color:#ff7777}
-nav{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:15px}
-nav button{flex:1;min-width:100px}
-footer{text-align:center;color:#8394aa;padding:20px;font-size:12px}
-</style>
-</head>
-<body>
-
-<header>
- <div class="logo">E@trading</div>
- <span class="muted">Multi-Asset Platform</span>
-</header>
-
-<div class="container">
-
-<!-- AUTHENTICATION -->
-<section id="authSection">
-
- <div class="card" id="welcome">
-  <h2>Welcome to E@trading</h2>
-  <p class="muted">Your gateway to financial markets.</p>
-  <button class="full" onclick="showAuth('register')">Create Account</button>
-  <button class="full secondary" onclick="showAuth('login')">Login</button>
- </div>
-
- <div class="card hidden" id="register">
-  <h2>Create Account</h2>
-  <form id="registerForm">
-   <label>Full name</label>
-   <input id="fullname" required placeholder="Full name">
-
-   <label>Phone number</label>
-   <input id="phone" required type="tel" placeholder="+254...">
-
-   <label>Email address</label>
-   <input id="email" required type="email" placeholder="Email">
-
-   <label>Password (minimum 8 characters)</label>
-   <input id="password" required type="password" minlength="8">
-
-   <button class="full" type="submit">Register</button>
-  </form>
-  <p id="registerMessage" class="message"></p>
-  <button class="secondary" onclick="showAuth('login')">Already registered? Login</button>
- </div>
-
- <div class="card hidden" id="login">
-  <h2>Customer Login</h2>
-  <form id="loginForm">
-   <label>Email</label>
-   <input id="loginEmail" required type="email">
-
-   <label>Password</label>
-   <input id="loginPassword" required type="password">
-
-   <button class="full" type="submit">Login</button>
-  </form>
-  <p id="loginMessage" class="message"></p>
-  <button class="secondary" onclick="showAuth('register')">Create account</button>
- </div>
-</section>
-
-<!-- CUSTOMER DASHBOARD -->
-<section id="dashboard" class="hidden">
-
- <div class="card">
-  <h2>Welcome, <span id="customerName">Customer</span></h2>
-  <p class="muted" id="customerEmail"></p>
-  <p class="message" id="dashboardMessage"></p>
- </div>
-
- <nav>
-  <button onclick="showPage('overview')">Overview</button>
-  <button onclick="showPage('demo')">Demo Trading</button>
-  <button onclick="showPage('live')">Live Trading</button>
-  <button class="secondary" onclick="loadDashboard()">Refresh</button>
- </nav>
-
- <div id="overview" class="page">
-  <div class="card">
-   <p class="muted">DEMO ACCOUNT BALANCE</p>
-   <div class="balance" id="walletBalance">$0.00</div>
-   <span class="muted">Virtual funds · USD</span>
-  </div>
-
-  <div class="grid">
-   <div class="stat">
-    <span class="muted">Account type</span>
-    <strong>Demo</strong>
-   </div>
-   <div class="stat">
-    <span class="muted">Currency</span>
-    <strong>USD</strong>
-   </div>
-  </div>
-
-  <div class="card">
-   <h3>My Account</h3>
-   <p>Name: <span id="profileName"></span></p>
-   <p>Email: <span id="profileEmail"></span></p>
-   <p>Phone: <span id="profilePhone"></span></p>
-   <button class="danger full" onclick="logout()">Logout</button>
-  </div>
- </div>
-
- <div id="demo" class="page hidden">
-  <div class="card">
-   <h2>Demo Trading</h2>
-   <p class="muted">Practice trading using virtual funds.</p>
-   <div class="balance" id="demoBalance">$0.00</div>
-   <p>Demo trading engine is the next development stage.</p>
-   <p class="message">No real money is being traded.</p>
-  </div>
- </div>
-
- <div id="live" class="page hidden">
-  <div class="card">
-   <h2>Live Trading</h2>
-   <p class="muted">Real-money trading access.</p>
-   <p>Live trading is not yet activated.</p>
-   <p class="message">A regulated broker connection, compliance checks and secure funding arrangements are required before real trades can be placed.</p>
-  </div>
- </div>
-
-</section>
-
-<footer>
- E@trading · Multi-Asset Trading Platform · Version 2.0
-</footer>
-</div>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E@trading - Account Access</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#071525;
+ color:white;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ min-height:100vh;
+ padding:20px;
+}
+.container{
+ width:100%;
+ max-width:420px;
+ background:#10263d;
+ padding:28px;
+ border-radius:15px;
+ box-shadow:0 5px 25px #0008;
+}
+h1{text-align:center;color:#20d6a0}
+h2{text-align:center}
+p{text-align:center;color:#bdcbd8}
+input{
+ width:100%;
+ padding:14px;
+ margin:9px 0;
+ border:1px solid #456078;
+ border-radius:7px;
+ background:#071525;
+ color:white;
+}
+button{
+ width:100%;
+ padding:14px;
+ margin-top:12px;
+ border:0;
+ border-radius:7px;
+ background:#20d6a0;
+ color:#071525;
+ font-weight:bold;
+ font-size:16px;
+ cursor:pointer;
+}
+a{color:#20d6a0;cursor:pointer}
+.links{text-align:center;margin-top:18px}
+.hidden{display:none}
+#message{
+ margin-top:15px;
+ text-align:center;
+ overflow-wrap:anywhere;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>E@trading</h1>
+<p>Your trading platform</p>
+
+<div id="login">
+<h2>Login</h2>
+<input id="loginEmail" type="email" placeholder="Email address">
+<input id="loginPassword" type="password" placeholder="Password">
+<button onclick="loginUser()">Login</button>
+<div class="links">
+<a onclick="showSection('forgot')">Forgot Password?</a>
+<br><br>
+<a onclick="showSection('register')">Create Account</a>
+</div>
+</div>
+
+<div id="register" class="hidden">
+<h2>Create Account</h2>
+<input id="fullname" placeholder="Full name">
+<input id="phone" placeholder="Phone number">
+<input id="regEmail" type="email" placeholder="Email address">
+<input id="regPassword" type="password" placeholder="Create password">
+<input id="confirm" type="password" placeholder="Confirm password">
+<button onclick="registerUser()">Register</button>
+<div class="links">
+<a onclick="showSection('login')">Back to Login</a>
+</div>
+</div>
+
+<div id="forgot" class="hidden">
+<h2>Reset Password</h2>
+<p>Enter your registered email address. We will send you a password reset link.</p>
+<input id="resetEmail" type="email" placeholder="Registered email">
+<button onclick="sendResetEmail()">Send Reset Link</button>
+<div class="links">
+<a onclick="showSection('login')">Back to Login</a>
+</div>
+</div>
+
+<div id="newPassword" class="hidden">
+<h2>Create New Password</h2>
+<input id="newPass" type="password" placeholder="New password">
+<input id="confirmNewPass" type="password" placeholder="Confirm new password">
+<button onclick="updatePassword()">Save New Password</button>
+</div>
+
+<div id="message"></div>
+</div>
+
 <script>
-const SUPABASE_URL = "https://vfmswfhfphtusxcfzqhs.supabase.co";
-const SUPABASE_KEY = "sb_publishable_pt_o3PnyZtw6rMo8OYckXg_dnx_TnCW";
+const SUPABASE_URL =
+"https://vfmswfhfphtusxcfzqhs.supabase.co";
 
-const db = window.supabase.createClient(
- SUPABASE_URL,
- SUPABASE_KEY
-);
+const SUPABASE_KEY =
+"sb_publishable_pt_o3PnyZtw6rMo8OYckXg_dnx_TnCW";
 
-function showAuth(name){
- document.getElementById('welcome').classList.add('hidden');
- document.getElementById('register').classList.add('hidden');
- document.getElementById('login').classList.add('hidden');
- document.getElementById(name).classList.remove('hidden');
+const supabaseClient =
+window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const redirectURL = window.location.origin + window.location.pathname;
+
+function showSection(section){
+ ["login","register","forgot","newPassword"].forEach(id=>{
+  document.getElementById(id).classList.add("hidden");
+ });
+ document.getElementById(section).classList.remove("hidden");
+ document.getElementById("message").textContent="";
 }
 
-function showPage(name){
- document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
- document.getElementById(name).classList.remove('hidden');
+function message(text){
+ document.getElementById("message").textContent=text;
 }
 
-document.getElementById('registerForm').addEventListener('submit',async e=>{
- e.preventDefault();
+async function registerUser(){
+ const fullname=document.getElementById("fullname").value.trim();
+ const phone=document.getElementById("phone").value.trim();
+ const email=document.getElementById("regEmail").value.trim();
+ const password=document.getElementById("regPassword").value;
+ const confirm=document.getElementById("confirm").value;
 
- const msg=document.getElementById('registerMessage');
- msg.textContent='Creating account...';
+ if(!fullname || !phone || !email || !password){
+  return message("Please complete all fields.");
+ }
+ if(password!==confirm){
+  return message("Passwords do not match.");
+ }
+ if(password.length<6){
+  return message("Password must have at least 6 characters.");
+ }
 
- const fullName=document.getElementById('fullname').value.trim();
- const phone=document.getElementById('phone').value.trim();
- const email=document.getElementById('email').value.trim();
- const password=document.getElementById('password').value;
+ message("Creating account...");
 
- const {data,error}=await db.auth.signUp({
-  email,password,
+ const {data,error}=await supabaseClient.auth.signUp({
+  email,
+  password,
   options:{
-   data:{
-    full_name:fullName,
-    phone:phone
-   }
+   emailRedirectTo:redirectURL,
+   data:{full_name:fullname,phone:phone}
   }
  });
 
- if(error){
-  msg.textContent=error.message;
-  msg.classList.add('error');
-  return;
- }
+ if(error) return message(error.message);
 
- msg.classList.remove('error');
- msg.textContent=data.session
-  ? 'Account created. Loading dashboard...'
-  : 'Account created! Check your email for confirmation before logging in.';
-
- if(data.session) await loadDashboard();
-});
-
-document.getElementById('loginForm').addEventListener('submit',async e=>{
- e.preventDefault();
-
- const msg=document.getElementById('loginMessage');
- msg.textContent='Signing in...';
-
- const {error}=await db.auth.signInWithPassword({
-  email:document.getElementById('loginEmail').value.trim(),
-  password:document.getElementById('loginPassword').value
- });
-
- if(error){
-  msg.textContent=error.message;
-  msg.classList.add('error');
-  return;
- }
-
- msg.classList.remove('error');
- await loadDashboard();
-});
-
-async function loadDashboard(){
- const {data:{user},error:authError}=await db.auth.getUser();
-
- if(authError || !user){
-  document.getElementById('dashboard').classList.add('hidden');
-  document.getElementById('authSection').classList.remove('hidden');
-  return;
- }
-
- document.getElementById('authSection').classList.add('hidden');
- document.getElementById('dashboard').classList.remove('hidden');
-
- document.getElementById('customerName').textContent=
-  user.user_metadata?.full_name || 'Customer';
-
- document.getElementById('customerEmail').textContent=user.email || '';
- document.getElementById('profileName').textContent=
-  user.user_metadata?.full_name || 'Not provided';
- document.getElementById('profileEmail').textContent=user.email || '';
- document.getElementById('profilePhone').textContent=
-  user.user_metadata?.phone || 'Not provided';
-
- const {data:wallet,error}=await db
-  .from('demo_wallets')
-  .select('balance,currency')
-  .eq('user_id',user.id)
-  .maybeSingle();
-
- const message=document.getElementById('dashboardMessage');
-
- if(error){
-  message.textContent='Could not load wallet: '+error.message;
-  return;
- }
-
- if(!wallet){
-  message.textContent='Wallet not found. Please contact platform support.';
-  return;
- }
-
- const amount=Number(wallet.balance).toLocaleString('en-US',{
-  minimumFractionDigits:2,
-  maximumFractionDigits:2
- });
-
- document.getElementById('walletBalance').textContent=
-  wallet.currency+' '+amount;
-
- document.getElementById('demoBalance').textContent=
-  wallet.currency+' '+amount;
-
- message.textContent='Account and wallet loaded successfully.';
- showPage('overview');
+ message("Account created. Check your email to confirm your account.");
 }
 
-async function logout(){
- await db.auth.signOut();
- document.getElementById('dashboard').classList.add('hidden');
- document.getElementById('authSection').classList.remove('hidden');
- showAuth('welcome');
+async function loginUser(){
+ const email=document.getElementById("loginEmail").value.trim();
+ const password=document.getElementById("loginPassword").value;
+
+ if(!email || !password){
+  return message("Enter your email and password.");
+ }
+
+ message("Logging in...");
+
+ const {data,error}=await supabaseClient.auth.signInWithPassword({
+  email,password
+ });
+
+ if(error) return message(error.message);
+
+ message("Login successful! Welcome to E@trading.");
 }
 
-db.auth.onAuthStateChange((event,session)=>{
- if(event==='SIGNED_IN' && session){
-  setTimeout(()=>loadDashboard(),0);
+async function sendResetEmail(){
+ const email=document.getElementById("resetEmail").value.trim();
+
+ if(!email){
+  return message("Enter your registered email.");
+ }
+
+ message("Sending password reset email...");
+
+ const {error}=await supabaseClient.auth.resetPasswordForEmail(
+  email,
+  {redirectTo:redirectURL}
+ );
+
+ if(error) return message(error.message);
+
+ message("Password reset email sent. Check your inbox and spam folder.");
+}
+
+async function updatePassword(){
+ const password=document.getElementById("newPass").value;
+ const confirm=document.getElementById("confirmNewPass").value;
+
+ if(password.length<6){
+  return message("Password must have at least 6 characters.");
+ }
+ if(password!==confirm){
+  return message("Passwords do not match.");
+ }
+
+ message("Updating password...");
+
+ const {error}=await supabaseClient.auth.updateUser({
+  password:password
+ });
+
+ if(error) return message(error.message);
+
+ message("Password updated successfully. You can now log in.");
+ showSection("login");
+}
+
+supabaseClient.auth.onAuthStateChange((event,session)=>{
+ if(event==="PASSWORD_RECOVERY"){
+  showSection("newPassword");
  }
 });
 
-(async()=>{
- const {data:{session}}=await db.auth.getSession();
- if(session) await loadDashboard();
-})();
+if(window.location.hash.includes("type=recovery")){
+ showSection("newPassword");
+}
 </script>
 </body>
 </html>
-
 
