@@ -4,254 +4,207 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>E@trading | Professional Trading Dashboard</title>
+<title>E@trading | Trading Dashboard</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#07111f;color:#fff;font-family:Arial,sans-serif}
-header{background:#101e31;padding:17px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
-.logo{font-size:23px;font-weight:bold;color:#32d6a0}
-.logo span{color:white}
-button{cursor:pointer;border:0;border-radius:7px;padding:12px;font-weight:bold}
-.logout{background:#293b51;color:white}
+body{
+ margin:0;
+ background:#080e1b;
+ color:#fff;
+ font-family:Arial,sans-serif;
+}
+header{
+ background:#111b2d;
+ padding:18px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:12px;
+}
+.logo{font-size:25px;font-weight:bold;color:#19d6a0}
+button,select,input{
+ padding:12px;
+ border:0;
+ border-radius:7px;
+ font-size:15px;
+}
+button{cursor:pointer;background:#19d6a0;color:#07121b;font-weight:bold}
+.logout{background:#e64c58;color:white}
 main{max-width:1200px;margin:auto;padding:16px}
-.demo{background:#153d35;color:#72eac0;padding:12px;text-align:center;border-radius:8px;margin-bottom:15px}
-.panel{background:#122239;border:1px solid #263b54;border-radius:12px;padding:17px;margin:17px 0}
+.card{
+ background:#111b2d;
+ border:1px solid #25344c;
+ border-radius:12px;
+ padding:17px;
+ margin-bottom:18px;
+}
 h2{font-size:19px;margin-top:0}
-.balance{background:linear-gradient(120deg,#12443e,#17304e);padding:23px;border-radius:12px}
-.balance h1{font-size:35px;margin:12px 0}
-.muted{color:#a6b8ca;font-size:13px;line-height:1.5}
-.market-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px}
-.market{background:#1b3049;border-radius:9px;padding:14px;cursor:pointer;border:1px solid #344c67;color:white;text-align:left}
-.market strong{display:block;color:#48d9aa;margin-bottom:7px}
-.market.active{border:1px solid #48d9aa;background:#194238}
-.chart{height:520px;width:100%;overflow:hidden}
-.chart .tradingview-widget-container{height:100%;width:100%}
-.chart .tradingview-widget-container__widget{height:calc(100% - 32px);width:100%}
-.analysis{height:430px;overflow:hidden}
-input,select{width:100%;padding:13px;border-radius:7px;background:#071729;border:1px solid #38516b;color:white;font-size:16px}
-label{display:block;margin:13px 0 7px;color:#b8cadc}
-.trade-buttons{display:flex;gap:10px;margin-top:15px}
-.buy,.sell{flex:1}
-.buy{background:#16b981;color:#06271c}
-.sell{background:#e65050;color:white}
-button:disabled{opacity:.5}
+.muted{color:#9baac0}
+.balance{font-size:30px;color:#19d6a0;font-weight:bold}
+.markets{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+ gap:9px;
+}
+.market{
+ background:#1c2b42;
+ color:white;
+ border:1px solid #34465f;
+}
+.market.active{border:2px solid #19d6a0}
+.chart-frame{
+ width:100%;
+ height:480px;
+ border:0;
+ border-radius:8px;
+ background:#0b1220;
+}
+input,select{
+ width:100%;
+ background:#202e43;
+ color:white;
+ border:1px solid #40516a;
+ margin:7px 0 13px;
+}
+.actions{display:flex;gap:10px}
+.actions button{flex:1}
+.sell{background:#e64c58;color:white}
+table{width:100%;border-collapse:collapse;min-width:550px}
+th,td{
+ padding:12px 9px;
+ border-bottom:1px solid #293950;
+ text-align:left;
+ font-size:13px;
+}
 .table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:480px}
-th,td{text-align:left;padding:12px;border-bottom:1px solid #30435a;font-size:13px}
-th{color:#50dcb0}
-.status{color:#54e2ae}
-footer{text-align:center;color:#8297ac;padding:25px;font-size:12px}
-@media(max-width:600px){.chart{height:430px}.balance h1{font-size:29px}main{padding:11px}}
+.success{color:#19d6a0}
+.error{color:#ff6975}
 </style>
 </head>
+
 <body>
 
 <header>
- <div class="logo">E<span>@trading</span></div>
+ <div class="logo">E@TRADING</div>
  <button class="logout" id="logoutBtn">LOG OUT</button>
 </header>
 
 <main>
 
-<div class="demo">
- E@TRADING DEMO ACCOUNT — PRACTICE WITH VIRTUAL MONEY
-</div>
-
-<section class="balance">
- <small>AVAILABLE DEMO BALANCE</small>
- <h1 id="balance">Loading...</h1>
- <small id="accountEmail">Checking account...</small>
+<section class="card">
+ <h2>Welcome to E@trading</h2>
+ <p class="muted">Your independent trading dashboard</p>
+ <p class="muted">Wallet Balance</p>
+ <div class="balance" id="balance">$0.00</div>
+ <p class="muted" id="accountStatus">Loading account...</p>
 </section>
 
-<section class="panel">
+<section class="card">
  <h2>Market Watch</h2>
- <p class="muted">Select a market to view its chart and technical analysis.</p>
- <div class="market-grid">
-  <button class="market active" data-symbol="BINANCE:BTCUSDT" data-asset="BTCUSD">
-   <strong>Bitcoin</strong> BTC / USD
-  </button>
-  <button class="market" data-symbol="BINANCE:ETHUSDT" data-asset="ETHUSD">
-   <strong>Ethereum</strong> ETH / USD
-  </button>
-  <button class="market" data-symbol="FX:EURUSD" data-asset="EURUSD">
-   <strong>Forex</strong> EUR / USD
-  </button>
-  <button class="market" data-symbol="FX:GBPUSD" data-asset="GBPUSD">
-   <strong>Forex</strong> GBP / USD
-  </button>
-  <button class="market" data-symbol="NASDAQ:AAPL" data-asset="AAPL">
-   <strong>Stocks</strong> Apple
-  </button>
-  <button class="market" data-symbol="OANDA:XAUUSD" data-asset="GOLD">
-   <strong>Gold</strong> XAU / USD
-  </button>
+ <p class="muted">Select a market to view its chart.</p>
+ <div class="markets">
+  <button class="market active" data-symbol="BINANCE:BTCUSDT" data-asset="BTCUSD">Bitcoin</button>
+  <button class="market" data-symbol="BINANCE:ETHUSDT" data-asset="ETHUSD">Ethereum</button>
+  <button class="market" data-symbol="FX:EURUSD" data-asset="EURUSD">EUR/USD</button>
+  <button class="market" data-symbol="FX:GBPUSD" data-asset="GBPUSD">GBP/USD</button>
+  <button class="market" data-symbol="NASDAQ:AAPL" data-asset="AAPL">Apple</button>
+  <button class="market" data-symbol="OANDA:XAUUSD" data-asset="GOLD">Gold</button>
  </div>
 </section>
 
-<section class="panel">
+<section class="card">
  <h2>Live Market Chart</h2>
- <p class="muted">Interactive candlestick chart. Change timeframes, zoom, draw and add indicators using the chart controls.</p>
- <div class="chart" id="mainChart">
-  <div class="tradingview-widget-container">
-   <div class="tradingview-widget-container__widget"></div>
-   <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-   {
-    "autosize":true,
-    "symbol":"BINANCE:BTCUSDT",
-    "interval":"15",
-    "timezone":"Etc/UTC",
-    "theme":"dark",
-    "style":"1",
-    "locale":"en",
-    "allow_symbol_change":true,
-    "calendar":false,
-    "support_host":"https://www.tradingview.com"
-   }
-   </script>
-  </div>
- </div>
- <p class="muted">Market data availability and delays depend on the provider and exchange.</p>
+ <p class="muted" id="chartTitle">Bitcoin / USDT</p>
+ <iframe
+  id="tradingChart"
+  class="chart-frame"
+  src="https://s.tradingview.com/widgetembed/?symbol=BINANCE%3ABTCUSDT&interval=60&theme=dark&style=1&locale=en&allow_symbol_change=true&hide_top_toolbar=false&hide_side_toolbar=false"
+  allowtransparency="true"
+  scrolling="no"
+  allowfullscreen>
+ </iframe>
 </section>
 
-<section class="panel">
- <h2>Technical Analysis</h2>
- <p class="muted">Review the technical summary, moving averages and oscillators. These are analytical indicators, not guaranteed trading signals.</p>
- <div class="analysis" id="technicalAnalysis">
-  <div class="tradingview-widget-container">
-   <div class="tradingview-widget-container__widget"></div>
-   <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
-   {
-    "interval":"15m",
-    "width":"100%",
-    "isTransparent":true,
-    "height":"100%",
-    "symbol":"BINANCE:BTCUSDT",
-    "showIntervalTabs":true,
-    "displayMode":"multiple",
-    "locale":"en",
-    "colorTheme":"dark"
-   }
-   </script>
-  </div>
- </div>
-</section>
+<section class="card">
+ <h2>Demo Trading</h2>
+ <p class="muted">Practice trades using illustrative prices. No real money is involved.</p>
 
-<section class="panel">
- <h2>Market Overview</h2>
- <p class="muted">Compare selected market movements and instruments.</p>
- <div class="tradingview-widget-container" style="height:550px;width:100%">
-  <div class="tradingview-widget-container__widget"></div>
-  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
-  {
-   "colorTheme":"dark",
-   "dateRange":"12M",
-   "showChart":true,
-   "locale":"en",
-   "width":"100%",
-   "height":"550",
-   "isTransparent":true,
-   "showSymbolLogo":true,
-   "tabs":[
-    {
-     "title":"Crypto",
-     "symbols":[
-      {"s":"BINANCE:BTCUSDT","d":"Bitcoin"},
-      {"s":"BINANCE:ETHUSDT","d":"Ethereum"}
-     ]
-    },
-    {
-     "title":"Forex",
-     "symbols":[
-      {"s":"FX:EURUSD","d":"EUR/USD"},
-      {"s":"FX:GBPUSD","d":"GBP/USD"}
-     ]
-    },
-    {
-     "title":"Stocks",
-     "symbols":[
-      {"s":"NASDAQ:AAPL","d":"Apple"},
-      {"s":"NASDAQ:MSFT","d":"Microsoft"}
-     ]
-    },
-    {
-     "title":"Commodities",
-     "symbols":[
-      {"s":"OANDA:XAUUSD","d":"Gold"}
-     ]
-    }
-   ]
-  }
-  </script>
- </div>
-</section>
-
-<section class="panel">
- <h2>Place Demo Trade</h2>
- <p class="muted">Orders use the illustrative prices listed in this form, not the live chart quotes.</p>
-
- <label>Asset</label>
+ <label>Selected Asset</label>
  <select id="asset">
-  <option value="BTCUSD">Bitcoin</option>
-  <option value="ETHUSD">Ethereum</option>
+  <option value="BTCUSD">Bitcoin (BTC/USD)</option>
+  <option value="ETHUSD">Ethereum (ETH/USD)</option>
   <option value="EURUSD">EUR/USD</option>
   <option value="GBPUSD">GBP/USD</option>
-  <option value="AAPL">Apple</option>
+  <option value="AAPL">Apple (AAPL)</option>
   <option value="GOLD">Gold</option>
  </select>
 
- <label>Trade direction</label>
- <select id="side">
-  <option value="BUY">BUY</option>
-  <option value="SELL">SELL</option>
- </select>
-
  <label>Quantity</label>
- <input id="quantity" type="number" min="0.00000001" step="any" placeholder="Enter quantity">
+ <input id="quantity" type="number" min="0.000001" step="any" placeholder="Enter quantity">
 
- <label>Illustrative execution price (USD)</label>
- <input id="price" readonly>
+ <label>Illustrative demo price</label>
+ <input id="price" type="number" readonly>
 
- <div class="trade-buttons">
-  <button class="buy" id="buyBtn">BUY</button>
-  <button class="sell" id="sellBtn">SELL</button>
+ <div class="actions">
+  <button id="buyBtn">BUY</button>
+  <button id="sellBtn" class="sell">SELL</button>
  </div>
- <div id="tradeMessage" class="muted"></div>
+ <p id="tradeMessage" class="muted"></p>
 </section>
 
-<section class="panel">
- <h2>My Open Positions</h2>
+<section class="card">
+ <h2>Open Positions</h2>
  <div class="table-wrap">
   <table>
-   <thead><tr><th>Asset</th><th>Quantity</th><th>Average Entry</th></tr></thead>
-   <tbody id="positionsBody"><tr><td colspan="3">Loading...</td></tr></tbody>
+   <thead>
+    <tr><th>Asset</th><th>Quantity</th><th>Average Entry</th></tr>
+   </thead>
+   <tbody id="positions">
+    <tr><td colspan="3">Loading positions...</td></tr>
+   </tbody>
   </table>
  </div>
 </section>
 
-<section class="panel">
+<section class="card">
  <h2>Transaction History</h2>
  <div class="table-wrap">
   <table>
-   <thead><tr><th>Asset</th><th>Type</th><th>Quantity</th><th>Price</th><th>Status</th></tr></thead>
-   <tbody id="tradesBody"><tr><td colspan="5">Loading...</td></tr></tbody>
+   <thead>
+    <tr>
+     <th>Asset</th><th>Side</th><th>Quantity</th>
+     <th>Price</th><th>Status</th><th>Date</th>
+    </tr>
+   </thead>
+   <tbody id="history">
+    <tr><td colspan="6">Loading transactions...</td></tr>
+   </tbody>
   </table>
  </div>
 </section>
 
+<p class="muted" style="text-align:center">
+ E@trading © 2026 | Demo Trading Platform
+</p>
+
 </main>
 
-<footer>
- E@trading © 2026 | Independent demo trading platform
-<br>Market charts powered by TradingView. Demo orders are simulated.
-</footer>
-
 <script>
-const SUPABASE_URL="https://vfmswfhfphtusxcfzqhs.supabase.co";
-const SUPABASE_KEY="sb_publishable_pt_o3PnyZtw6rMo8OYckXg_dnx_TnCW";
-const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const SUPABASE_URL = "https://vfmswfhfphtusxcfzqhs.supabase.co";
+const SUPABASE_KEY = "sb_publishable_pt_o3PnyZtw6rMo8OYckXg_dnx_TnCW";
 
-const prices={
+const client = window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
+
+let currentUser = null;
+
+const demoPrices = {
  BTCUSD:95000,
  ETHUSD:3200,
  EURUSD:1.16,
@@ -260,156 +213,207 @@ const prices={
  GOLD:4000
 };
 
-let currentUser=null;
+const assetNames = {
+ BTCUSD:"Bitcoin / USDT",
+ ETHUSD:"Ethereum / USDT",
+ EURUSD:"EUR / USD",
+ GBPUSD:"GBP / USD",
+ AAPL:"Apple",
+ GOLD:"Gold"
+};
 
-const $=id=>document.getElementById(id);
-
-function updatePrice(){
- $("price").value=prices[$("asset").value].toFixed(4);
+function money(value){
+ return "$" + Number(value || 0).toLocaleString(
+  "en-US",{minimumFractionDigits:2,maximumFractionDigits:2}
+ );
 }
 
-$("asset").addEventListener("change",updatePrice);
-updatePrice();
+async function initialize(){
+ const {data,error} = await client.auth.getSession();
 
-async function checkAccount(){
- const {data,error}=await client.auth.getSession();
- if(error||!data.session){
-  location.href="index.html";
+ if(error || !data.session){
+  window.location.href="index.html";
   return;
  }
+
  currentUser=data.session.user;
- $("accountEmail").textContent=currentUser.email||"Customer account";
+
+ document.getElementById("accountStatus").textContent =
+  "Account: " + currentUser.email;
+
+ document.getElementById("price").value=demoPrices.BTCUSD;
+
  await refreshDashboard();
 }
 
-async function refreshBalance(){
- const {data,error}=await client.from("wallets")
-  .select("demo_balance,currency")
-  .eq("user_id",currentUser.id).single();
-
- if(error){
-  $("balance").textContent="Wallet unavailable";
-  $("tradeMessage").textContent=error.message;
-  return;
- }
-
- $("balance").textContent=
-  Number(data.demo_balance).toLocaleString("en-US",{
-   style:"currency",currency:data.currency||"USD"
-  });
-}
-
-async function refreshPositions(){
- const {data,error}=await client.from("positions")
-  .select("asset,quantity,average_entry_price")
-  .eq("user_id",currentUser.id).order("asset");
-
- const body=$("positionsBody");
- if(error){
-  body.textContent="Unable to load positions";
-  return;
- }
- body.innerHTML="";
- if(!data||!data.length){
-  body.innerHTML="<tr><td colspan='3'>No open positions yet</td></tr>";
-  return;
- }
- data.forEach(item=>{
-  const row=document.createElement("tr");
-  [item.asset,Number(item.quantity).toFixed(8),
-   Number(item.average_entry_price).toFixed(4)]
-   .forEach(value=>{
-    const cell=document.createElement("td");
-    cell.textContent=value;
-    row.appendChild(cell);
-   });
-  body.appendChild(row);
- });
-}
-
-async function refreshTrades(){
- const {data,error}=await client.from("trades")
-  .select("asset,trade_type,quantity,execution_price,status")
-  .eq("user_id",currentUser.id)
-  .order("created_at",{ascending:false}).limit(30);
-
- const body=$("tradesBody");
- if(error){
-  body.textContent="Unable to load transactions";
-  return;
- }
- body.innerHTML="";
- if(!data||!data.length){
-  body.innerHTML="<tr><td colspan='5'>No transactions yet</td></tr>";
-  return;
- }
- data.forEach(item=>{
-  const row=document.createElement("tr");
-  [item.asset,item.trade_type,
-   Number(item.quantity).toFixed(8),
-   Number(item.execution_price).toFixed(4),
-   item.status].forEach(value=>{
-    const cell=document.createElement("td");
-    cell.textContent=value;
-    row.appendChild(cell);
-   });
-  body.appendChild(row);
- });
-}
-
 async function refreshDashboard(){
- await Promise.all([
-  refreshBalance(),
-  refreshPositions(),
-  refreshTrades()
- ]);
+ await loadBalance();
+ await loadPositions();
+ await loadHistory();
+}
+
+async function loadBalance(){
+ const {data,error}=await client
+  .from("wallets")
+  .select("demo_balance")
+  .eq("user_id",currentUser.id)
+  .maybeSingle();
+
+ if(error){
+  document.getElementById("balance").textContent="Unavailable";
+  return;
+ }
+
+ document.getElementById("balance").textContent=
+  money(data ? data.demo_balance : 0);
+}
+
+async function loadPositions(){
+ const {data,error}=await client
+  .from("positions")
+  .select("asset,quantity,average_entry_price")
+  .eq("user_id",currentUser.id)
+  .order("asset");
+
+ const body=document.getElementById("positions");
+
+ if(error){
+  body.innerHTML='<tr><td colspan="3">Could not load positions.</td></tr>';
+  return;
+ }
+
+ if(!data || data.length===0){
+  body.innerHTML='<tr><td colspan="3">No open positions yet.</td></tr>';
+  return;
+ }
+
+ body.innerHTML=data.map(p=>`
+  <tr>
+   <td>${escapeHTML(p.asset)}</td>
+   <td>${Number(p.quantity)}</td>
+   <td>${money(p.average_entry_price)}</td>
+  </tr>
+ `).join("");
+}
+
+async function loadHistory(){
+ const {data,error}=await client
+  .from("trades")
+  .select("*")
+  .eq("user_id",currentUser.id)
+  .order("created_at",{ascending:false})
+  .limit(50);
+
+ const body=document.getElementById("history");
+
+ if(error){
+  body.innerHTML='<tr><td colspan="6">Could not load transaction history.</td></tr>';
+  return;
+ }
+
+ if(!data || data.length===0){
+  body.innerHTML='<tr><td colspan="6">No transactions yet.</td></tr>';
+  return;
+ }
+
+ body.innerHTML=data.map(t=>`
+  <tr>
+   <td>${escapeHTML(t.asset)}</td>
+   <td>${escapeHTML(t.side)}</td>
+   <td>${Number(t.quantity)}</td>
+   <td>${money(t.price)}</td>
+   <td>${escapeHTML(t.status)}</td>
+   <td>${t.created_at ? new Date(t.created_at).toLocaleString() : ""}</td>
+  </tr>
+ `).join("");
+}
+
+function escapeHTML(value){
+ return String(value ?? "").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
 }
 
 async function executeTrade(side){
- if(!currentUser)return;
- const asset=$("asset").value;
- const quantity=Number($("quantity").value);
- const price=prices[asset];
+ const asset=document.getElementById("asset").value;
+ const quantity=Number(document.getElementById("quantity").value);
+ const price=demoPrices[asset];
+ const message=document.getElementById("tradeMessage");
 
- if(!Number.isFinite(quantity)||quantity<=0){
-  $("tradeMessage").textContent="Enter a valid quantity greater than zero.";
+ if(!quantity || quantity<=0){
+  message.textContent="Enter a valid quantity.";
+  message.className="error";
   return;
  }
 
- $("buyBtn").disabled=true;
- $("sellBtn").disabled=true;
- $("tradeMessage").textContent="Processing demo order...";
+ message.textContent="Processing demo trade...";
+ message.className="muted";
 
- try{
-  const {data,error}=await client.rpc("execute_demo_trade",{
-   p_asset:asset,
-   p_side:side,
-   p_quantity:quantity,
-   p_price:price
-  });
-  if(error)throw error;
-  $("tradeMessage").textContent=
-   "Demo "+side+" completed. Transaction ID: "+data.trade_id;
-  $("quantity").value="";
-  await refreshDashboard();
- }catch(error){
-  $("tradeMessage").textContent="Trade failed: "+error.message;
- }finally{
-  $("buyBtn").disabled=false;
-  $("sellBtn").disabled=false;
+ const {data,error}=await client.rpc("execute_demo_trade",{
+  p_asset:asset,
+  p_side:side,
+  p_quantity:quantity,
+  p_price:price
+ });
+
+ if(error){
+  message.textContent="Trade failed: "+error.message;
+  message.className="error";
+  return;
  }
+
+ if(data && data.error){
+  message.textContent="Trade failed: "+data.error;
+  message.className="error";
+  return;
+ }
+
+ message.textContent="Demo trade completed successfully.";
+ message.className="success";
+
+ document.getElementById("quantity").value="";
+ await refreshDashboard();
 }
 
-$("buyBtn").addEventListener("click",()=>executeTrade("BUY"));
-$("sellBtn").addEventListener("click",()=>executeTrade("SELL"));
-
-$("logoutBtn").addEventListener("click",async()=>{
- await client.auth.signOut();
- location.href="index.html";
+document.getElementById("asset").addEventListener("change",e=>{
+ document.getElementById("price").value=demoPrices[e.target.value];
 });
 
-checkAccount();
+document.querySelectorAll(".market").forEach(button=>{
+ button.addEventListener("click",()=>{
+  document.querySelectorAll(".market").forEach(b=>b.classList.remove("active"));
+  button.classList.add("active");
+
+  const symbol=button.dataset.symbol;
+  const asset=button.dataset.asset;
+
+  document.getElementById("asset").value=asset;
+  document.getElementById("price").value=demoPrices[asset];
+  document.getElementById("chartTitle").textContent=assetNames[asset];
+
+  document.getElementById("tradingChart").src=
+   "https://s.tradingview.com/widgetembed/?symbol="+
+   encodeURIComponent(symbol)+
+   "&interval=60&theme=dark&style=1&locale=en&allow_symbol_change=true&hide_top_toolbar=false&hide_side_toolbar=false";
+ });
+});
+
+document.getElementById("buyBtn").addEventListener("click",()=>{
+ executeTrade("BUY");
+});
+
+document.getElementById("sellBtn").addEventListener("click",()=>{
+ executeTrade("SELL");
+});
+
+document.getElementById("logoutBtn").addEventListener("click",async()=>{
+ await client.auth.signOut();
+ window.location.href="index.html";
+});
+
+initialize();
 </script>
+
 </body>
 </html>
 
