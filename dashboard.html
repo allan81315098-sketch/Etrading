@@ -1,1 +1,132 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E@trading Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#071525;color:white;font-family:Arial,sans-serif}
+header{background:#10263d;padding:20px;display:flex;justify-content:space-between;align-items:center}
+h1{color:#20d6a0;margin:0;font-size:23px}
+main{padding:20px;max-width:1100px;margin:auto}
+.card{background:#10263d;padding:20px;border-radius:12px;margin-bottom:18px}
+.balance{font-size:30px;color:#20d6a0;font-weight:bold}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+button{padding:12px;border:0;border-radius:7px;background:#20d6a0;font-weight:bold;cursor:pointer}
+input,select{width:100%;padding:12px;margin:8px 0;background:#071525;color:white;border:1px solid #456078;border-radius:7px}
+.market{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid #345}
+.muted{color:#bdcbd8}
+</style>
+</head>
+<body>
+<header>
+<h1>E@trading</h1>
+<button onclick="logout()">Logout</button>
+</header>
+
+<main>
+<div class="card">
+<h2>Welcome to E@trading</h2>
+<p class="muted" id="userEmail">Checking account...</p>
+</div>
+
+<div class="card">
+<p>Demo account balance</p>
+<div class="balance">$10,000.00</div>
+<p class="muted">Simulated funds for practice only</p>
+</div>
+
+<h2>Markets</h2>
+<div class="grid">
+<div class="card"><h3>Forex</h3><p>Currency trading</p></div>
+<div class="card"><h3>Crypto</h3><p>Digital assets</p></div>
+<div class="card"><h3>Stocks</h3><p>Share markets</p></div>
+<div class="card"><h3>Gold</h3><p>Commodity market</p></div>
+</div>
+
+<div class="card">
+<h2>Practice Trade</h2>
+<p class="muted">This is a simulation, not a live market order.</p>
+<label>Select market</label>
+<select id="asset">
+<option>EUR/USD</option>
+<option>GBP/USD</option>
+<option>USD/JPY</option>
+<option>Bitcoin</option>
+<option>Ethereum</option>
+<option>Gold</option>
+<option>Apple</option>
+</select>
+<label>Trade amount (USD)</label>
+<input type="number" id="amount" min="1" placeholder="Enter amount">
+<div class="grid">
+<button onclick="trade('BUY')">BUY</button>
+<button onclick="trade('SELL')">SELL</button>
+</div>
+<p id="tradeMessage"></p>
+</div>
+
+<div class="card">
+<h2>Transaction History</h2>
+<div id="history">No transactions yet.</div>
+</div>
+</main>
+
+<script>
+const SUPABASE_URL="https://vfmswfhfphtusxcfzqhs.supabase.co";
+const SUPABASE_KEY="sb_publishable_pt_o3PnyZtw6rMo8OYckXg_dnx_TnCW";
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+let transactions=[];
+
+async function checkUser(){
+const {data,error}=await client.auth.getSession();
+if(error || !data.session){
+window.location.href="index.html";
+return;
+}
+document.getElementById("userEmail").textContent=
+"Logged in as "+data.session.user.email;
+}
+checkUser();
+
+function trade(side){
+const asset=document.getElementById("asset").value;
+const amount=Number(document.getElementById("amount").value);
+const msg=document.getElementById("tradeMessage");
+
+if(!Number.isFinite(amount)||amount<=0){
+msg.textContent="Enter a valid trade amount.";
+return;
+}
+if(amount>10000){
+msg.textContent="Amount exceeds the demo balance.";
+return;
+}
+
+const transaction={
+side,asset,amount,
+time:new Date().toLocaleString()
+};
+
+transactions.unshift(transaction);
+document.getElementById("history").innerHTML=
+transactions.map(t=>
+"<div class='market'><span>"+t.side+" "+t.asset+
+"</span><span>$"+t.amount.toFixed(2)+"</span></div>"
+).join("");
+
+msg.textContent=side+" practice order recorded successfully.";
+}
+
+async function logout(){
+await client.auth.signOut();
+window.location.href="index.html";
+}
+</script>
+</body>
+</html>
+
