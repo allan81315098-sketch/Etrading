@@ -4,129 +4,442 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>E@trading Dashboard</title>
+<title>E@trading | Trading Dashboard</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#071525;color:white;font-family:Arial,sans-serif}
-header{background:#10263d;padding:20px;display:flex;justify-content:space-between;align-items:center}
-h1{color:#20d6a0;margin:0;font-size:23px}
-main{padding:20px;max-width:1100px;margin:auto}
-.card{background:#10263d;padding:20px;border-radius:12px;margin-bottom:18px}
-.balance{font-size:30px;color:#20d6a0;font-weight:bold}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
-button{padding:12px;border:0;border-radius:7px;background:#20d6a0;font-weight:bold;cursor:pointer}
-input,select{width:100%;padding:12px;margin:8px 0;background:#071525;color:white;border:1px solid #456078;border-radius:7px}
-.market{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid #345}
-.muted{color:#bdcbd8}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#08111f;
+ color:#fff;
+}
+header{
+ background:#101e31;
+ padding:18px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ border-bottom:1px solid #263950;
+}
+.logo{font-size:23px;font-weight:bold;color:#36d6a0}
+.logo span{color:white}
+button{
+ border:0;
+ padding:12px 17px;
+ border-radius:7px;
+ cursor:pointer;
+ font-weight:bold;
+}
+.logout{background:#263950;color:white}
+main{max-width:1100px;margin:auto;padding:20px}
+.demo{
+ background:#173d37;
+ padding:12px;
+ border-radius:8px;
+ color:#75f2c5;
+ text-align:center;
+ margin-bottom:18px;
+}
+.balance{
+ background:linear-gradient(135deg,#123d42,#142b45);
+ padding:25px;
+ border-radius:13px;
+ margin-bottom:20px;
+}
+.balance small{color:#b9d5d7}
+.balance h1{font-size:36px;margin:12px 0}
+.cards{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+ gap:12px;
+ margin-bottom:25px;
+}
+.card{
+ background:#14243a;
+ padding:17px;
+ border-radius:10px;
+ border:1px solid #263950;
+}
+.card h3{margin:0 0 10px;color:#43d9a6}
+.card p{margin:0;color:#d2dce8}
+.panel{
+ background:#14243a;
+ padding:20px;
+ border-radius:12px;
+ margin-bottom:20px;
+}
+h2{font-size:20px}
+label{display:block;margin:13px 0 7px;color:#c7d5e5}
+input,select{
+ width:100%;
+ padding:13px;
+ border-radius:7px;
+ border:1px solid #344b64;
+ background:#081729;
+ color:white;
+ font-size:16px;
+}
+.trade-buttons{
+ display:flex;
+ gap:10px;
+ margin-top:18px;
+}
+.buy{background:#13b981;color:#06271d;flex:1}
+.sell{background:#ef5350;color:white;flex:1}
+button:disabled{opacity:.5;cursor:not-allowed}
+table{
+ width:100%;
+ border-collapse:collapse;
+ min-width:480px;
+}
+th,td{
+ padding:12px;
+ text-align:left;
+ border-bottom:1px solid #2a3c51;
+ font-size:13px;
+}
+th{color:#51d8aa}
+.table-wrap{overflow-x:auto}
+.message{margin-top:14px;font-size:14px;line-height:1.5}
+.muted{color:#9fb0c3}
+footer{
+ text-align:center;
+ padding:25px;
+ color:#8294a9;
+ font-size:12px;
+}
 </style>
 </head>
+
 <body>
+
 <header>
-<h1>E@trading</h1>
-<button onclick="logout()">Logout</button>
+ <div class="logo">E<span>@trading</span></div>
+ <button class="logout" id="logoutBtn">Logout</button>
 </header>
 
 <main>
-<div class="card">
-<h2>Welcome to E@trading</h2>
-<p class="muted" id="userEmail">Checking account...</p>
+
+<div class="demo">
+ DEMO TRADING ACCOUNT — NO REAL MONEY
 </div>
 
-<div class="card">
-<p>Demo account balance</p>
-<div class="balance">$10,000.00</div>
-<p class="muted">Simulated funds for practice only</p>
-</div>
+<section class="balance">
+ <small>YOUR AVAILABLE DEMO BALANCE</small>
+ <h1 id="balance">$10,000.00</h1>
+ <small id="accountEmail">Loading account...</small>
+</section>
 
 <h2>Markets</h2>
-<div class="grid">
-<div class="card"><h3>Forex</h3><p>Currency trading</p></div>
-<div class="card"><h3>Crypto</h3><p>Digital assets</p></div>
-<div class="card"><h3>Stocks</h3><p>Share markets</p></div>
-<div class="card"><h3>Gold</h3><p>Commodity market</p></div>
-</div>
 
-<div class="card">
-<h2>Practice Trade</h2>
-<p class="muted">This is a simulation, not a live market order.</p>
-<label>Select market</label>
-<select id="asset">
-<option>EUR/USD</option>
-<option>GBP/USD</option>
-<option>USD/JPY</option>
-<option>Bitcoin</option>
-<option>Ethereum</option>
-<option>Gold</option>
-<option>Apple</option>
-</select>
-<label>Trade amount (USD)</label>
-<input type="number" id="amount" min="1" placeholder="Enter amount">
-<div class="grid">
-<button onclick="trade('BUY')">BUY</button>
-<button onclick="trade('SELL')">SELL</button>
-</div>
-<p id="tradeMessage"></p>
-</div>
+<section class="cards">
+ <div class="card">
+  <h3>Forex</h3>
+  <p>Currency markets</p>
+ </div>
+ <div class="card">
+  <h3>Crypto</h3>
+  <p>Digital assets</p>
+ </div>
+ <div class="card">
+  <h3>Stocks</h3>
+  <p>Share markets</p>
+ </div>
+ <div class="card">
+  <h3>Gold</h3>
+  <p>Commodity market</p>
+ </div>
+</section>
 
-<div class="card">
-<h2>Transaction History</h2>
-<div id="history">No transactions yet.</div>
-</div>
+<section class="panel">
+ <h2>Place a Demo Trade</h2>
+
+ <label for="asset">Select asset</label>
+ <select id="asset">
+  <option value="EURUSD">EUR/USD</option>
+  <option value="GBPUSD">GBP/USD</option>
+  <option value="BTCUSD">Bitcoin (BTC/USD)</option>
+  <option value="ETHUSD">Ethereum (ETH/USD)</option>
+  <option value="AAPL">Apple (AAPL)</option>
+  <option value="GOLD">Gold (XAU/USD)</option>
+ </select>
+
+ <label for="side">Trade type</label>
+ <select id="side">
+  <option value="BUY">BUY</option>
+  <option value="SELL">SELL</option>
+ </select>
+
+ <label for="quantity">Quantity</label>
+ <input id="quantity" type="number" min="0.00000001"
+ step="any" placeholder="Enter quantity">
+
+ <label>Demo execution price</label>
+ <input id="price" readonly>
+
+ <div class="trade-buttons">
+  <button class="buy" id="buyBtn">BUY</button>
+  <button class="sell" id="sellBtn">SELL</button>
+ </div>
+
+ <div class="message" id="tradeMessage"></div>
+ <p class="muted">Prices are illustrative demo prices, not live market quotes.</p>
+</section>
+
+<section class="panel">
+ <h2>Your Asset Holdings</h2>
+ <div class="table-wrap">
+  <table>
+   <thead>
+    <tr>
+     <th>Asset</th>
+     <th>Quantity</th>
+     <th>Average Entry</th>
+    </tr>
+   </thead>
+   <tbody id="positionsBody">
+    <tr><td colspan="3">Loading holdings...</td></tr>
+   </tbody>
+  </table>
+ </div>
+</section>
+
+<section class="panel">
+ <h2>Transaction History</h2>
+ <div class="table-wrap">
+  <table>
+   <thead>
+    <tr>
+     <th>Asset</th>
+     <th>Type</th>
+     <th>Quantity</th>
+     <th>Price</th>
+     <th>Status</th>
+    </tr>
+   </thead>
+   <tbody id="tradesBody">
+    <tr><td colspan="5">Loading transactions...</td></tr>
+   </tbody>
+  </table>
+ </div>
+</section>
+
 </main>
 
+<footer>
+ E@trading © 2026. Independent demo trading platform.
+<br>Practice trading only. No real-money execution.
+</footer>
+
 <script>
-const SUPABASE_URL="https://vfmswfhfphtusxcfzqhs.supabase.co";
-const SUPABASE_KEY="sb_publishable_pt_o3PnyZtw6rMo8OYckXg_dnx_TnCW";
-const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const SUPABASE_URL =
+"https://vfmswfhfphtusxcfzqhs.supabase.co";
 
-let transactions=[];
+const SUPABASE_KEY =
+"sb_publishable_pt_o3PnyZtw6rMo8OYckXg_dnx_TnCW";
 
-async function checkUser(){
-const {data,error}=await client.auth.getSession();
-if(error || !data.session){
-window.location.href="index.html";
-return;
-}
-document.getElementById("userEmail").textContent=
-"Logged in as "+data.session.user.email;
-}
-checkUser();
+const client = window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
 
-function trade(side){
-const asset=document.getElementById("asset").value;
-const amount=Number(document.getElementById("amount").value);
-const msg=document.getElementById("tradeMessage");
-
-if(!Number.isFinite(amount)||amount<=0){
-msg.textContent="Enter a valid trade amount.";
-return;
-}
-if(amount>10000){
-msg.textContent="Amount exceeds the demo balance.";
-return;
-}
-
-const transaction={
-side,asset,amount,
-time:new Date().toLocaleString()
+// Illustrative prices for demo practice only
+const prices = {
+ EURUSD: 1.1600,
+ GBPUSD: 1.3100,
+ BTCUSD: 95000,
+ ETHUSD: 3200,
+ AAPL: 250,
+ GOLD: 4000
 };
 
-transactions.unshift(transaction);
-document.getElementById("history").innerHTML=
-transactions.map(t=>
-"<div class='market'><span>"+t.side+" "+t.asset+
-"</span><span>$"+t.amount.toFixed(2)+"</span></div>"
-).join("");
+let currentUser = null;
 
-msg.textContent=side+" practice order recorded successfully.";
+const balanceElement = document.getElementById("balance");
+const messageElement = document.getElementById("tradeMessage");
+const assetElement = document.getElementById("asset");
+const priceElement = document.getElementById("price");
+
+function updatePrice(){
+ priceElement.value = prices[assetElement.value].toFixed(4);
 }
 
-async function logout(){
-await client.auth.signOut();
-window.location.href="index.html";
+assetElement.addEventListener("change", updatePrice);
+updatePrice();
+
+async function checkAccount(){
+ const {data,error} = await client.auth.getSession();
+
+ if(error || !data.session){
+  window.location.href = "index.html";
+  return;
+ }
+
+ currentUser = data.session.user;
+
+ document.getElementById("accountEmail").textContent =
+ currentUser.email || "Customer account";
+
+ await refreshDashboard();
 }
+
+async function refreshBalance(){
+ const {data,error} = await client
+  .from("wallets")
+  .select("demo_balance,currency")
+  .eq("user_id",currentUser.id)
+  .single();
+
+ if(error){
+  balanceElement.textContent = "Wallet unavailable";
+  messageElement.textContent = error.message;
+  return;
+ }
+
+ balanceElement.textContent =
+ "$" + Number(data.demo_balance).toLocaleString(
+  "en-US",{minimumFractionDigits:2,maximumFractionDigits:2}
+ );
+}
+
+async function refreshPositions(){
+ const {data,error} = await client
+  .from("positions")
+  .select("asset,quantity,average_entry_price")
+  .eq("user_id",currentUser.id)
+  .order("asset");
+
+ const body = document.getElementById("positionsBody");
+
+ if(error){
+  body.innerHTML = "<tr><td colspan='3'>Unable to load holdings</td></tr>";
+  return;
+ }
+
+ if(!data || data.length === 0){
+  body.innerHTML = "<tr><td colspan='3'>No holdings yet</td></tr>";
+  return;
+ }
+
+ body.innerHTML = data.map(item => `
+  <tr>
+   <td>${item.asset}</td>
+   <td>${Number(item.quantity).toFixed(8)}</td>
+   <td>${Number(item.average_entry_price).toFixed(4)}</td>
+  </tr>
+ `).join("");
+}
+
+async function refreshTrades(){
+ const {data,error} = await client
+  .from("trades")
+  .select("asset,trade_type,quantity,execution_price,status")
+  .eq("user_id",currentUser.id)
+  .order("created_at",{ascending:false})
+  .limit(30);
+
+ const body = document.getElementById("tradesBody");
+
+ if(error){
+  body.innerHTML = "<tr><td colspan='5'>Unable to load transactions</td></tr>";
+  return;
+ }
+
+ if(!data || data.length === 0){
+  body.innerHTML = "<tr><td colspan='5'>No transactions yet</td></tr>";
+  return;
+ }
+
+ body.innerHTML = data.map(item => `
+  <tr>
+   <td>${item.asset}</td>
+   <td>${item.trade_type}</td>
+   <td>${Number(item.quantity).toFixed(8)}</td>
+   <td>${Number(item.execution_price).toFixed(4)}</td>
+   <td>${item.status}</td>
+  </tr>
+ `).join("");
+}
+
+async function refreshDashboard(){
+ await refreshBalance();
+ await refreshPositions();
+ await refreshTrades();
+}
+
+async function executeTrade(side){
+ if(!currentUser) return;
+
+ const asset = assetElement.value;
+ const quantity = Number(
+  document.getElementById("quantity").value
+ );
+ const price = prices[asset];
+
+ if(!Number.isFinite(quantity) || quantity <= 0){
+  messageElement.textContent =
+   "Enter a valid quantity greater than zero.";
+  return;
+ }
+
+ const buttons = [
+  document.getElementById("buyBtn"),
+  document.getElementById("sellBtn")
+ ];
+
+ buttons.forEach(button => button.disabled = true);
+ messageElement.textContent = "Processing demo trade...";
+
+ try{
+  const {data,error} = await client.rpc(
+   "execute_demo_trade",
+   {
+    p_asset:asset,
+    p_side:side,
+    p_quantity:quantity,
+    p_price:price
+   }
+  );
+
+  if(error) throw error;
+
+  messageElement.textContent =
+   side + " order completed successfully. Demo trade ID: " +
+   data.trade_id;
+
+  document.getElementById("quantity").value = "";
+
+  await refreshDashboard();
+
+ }catch(error){
+  messageElement.textContent =
+   "Trade failed: " + error.message;
+ }finally{
+  buttons.forEach(button => button.disabled = false);
+ }
+}
+
+document.getElementById("buyBtn").addEventListener(
+ "click",()=>executeTrade("BUY")
+);
+
+document.getElementById("sellBtn").addEventListener(
+ "click",()=>executeTrade("SELL")
+);
+
+document.getElementById("logoutBtn").addEventListener(
+ "click",async()=>{
+  await client.auth.signOut();
+  window.location.href = "index.html";
+ }
+);
+
+checkAccount();
 </script>
+
 </body>
 </html>
 
