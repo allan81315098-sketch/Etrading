@@ -5,30 +5,46 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>E@trading - Account Access</title>
+
 <style>
 *{box-sizing:border-box}
+
 body{
  margin:0;
  font-family:Arial,sans-serif;
  background:#0b1220;
  color:white;
 }
+
 header{
  background:#142238;
  padding:22px;
  text-align:center;
  border-bottom:2px solid #10b981;
 }
-.logo{font-size:30px;font-weight:bold;color:#10b981}
-.container{max-width:480px;margin:30px auto;padding:18px}
+
+.logo{
+ font-size:30px;
+ font-weight:bold;
+ color:#10b981;
+}
+
+.container{
+ max-width:480px;
+ margin:30px auto;
+ padding:18px;
+}
+
 .card{
  background:#17243a;
  padding:24px;
  border-radius:14px;
  margin-bottom:20px;
 }
+
 h2{text-align:center}
 p{text-align:center;color:#aab8ca}
+
 input{
  width:100%;
  padding:14px;
@@ -38,7 +54,12 @@ input{
  border-radius:7px;
  color:white;
 }
-label{font-size:14px;color:#d5deeb}
+
+label{
+ font-size:14px;
+ color:#d5deeb;
+}
+
 button{
  width:100%;
  padding:14px;
@@ -50,12 +71,23 @@ button{
  cursor:pointer;
  margin-top:10px;
 }
+
 .secondary{background:#263b55}
 .hidden{display:none}
-.note{font-size:12px;color:#9aabc0;line-height:1.6}
-#message{color:#36d399;line-height:1.5}
+
+.note{
+ font-size:12px;
+ color:#9aabc0;
+ line-height:1.6;
+}
+
+.message{
+ color:#36d399;
+ line-height:1.5;
+}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -78,29 +110,25 @@ button{
 
   <form onsubmit="registerUser(event)">
    <label>Full Name</label>
-   <input id="fullname" type="text"
-   placeholder="Enter your full name" required>
+   <input id="fullname" type="text" placeholder="Enter your full name" required>
 
    <label>Phone Number</label>
-   <input id="phone" type="tel"
-   placeholder="+254712345678" required>
+   <input id="phone" type="tel" placeholder="+254712345678" required>
 
    <label>Email Address</label>
-   <input id="email" type="email"
-   placeholder="example@email.com" required>
+   <input id="email" type="email" placeholder="example@email.com" required>
 
    <label>Password</label>
-   <input id="password" type="password"
-   placeholder="Create a password" minlength="8" required>
+   <input id="password" type="password" minlength="8" required>
 
    <label>Confirm Password</label>
-   <input id="confirm" type="password"
-   placeholder="Confirm your password" minlength="8" required>
+   <input id="confirm" type="password" minlength="8" required>
 
    <button type="submit">Register</button>
   </form>
 
-  <p id="registerMessage"></p>
+  <p id="registerMessage" class="message"></p>
+
   <button class="secondary" onclick="showForm('login')">
    Already have an account? Login
   </button>
@@ -111,18 +139,17 @@ button{
   <p>Access your trading account.</p>
 
   <form onsubmit="loginUser(event)">
-   <label>Email Address or Phone Number</label>
-   <input id="identity" type="text"
-   placeholder="Enter email or phone number" required>
+   <label>Email Address</label>
+   <input id="identity" type="email" placeholder="Enter your email" required>
 
    <label>Password</label>
-   <input id="loginPassword" type="password"
-   placeholder="Enter your password" required>
+   <input id="loginPassword" type="password" required>
 
    <button type="submit">Login</button>
   </form>
 
-  <p id="loginMessage"></p>
+  <p id="loginMessage" class="message"></p>
+
   <button class="secondary" onclick="showForm('register')">
    Create a new account
   </button>
@@ -135,22 +162,38 @@ button{
  </div>
 
  <p class="note">
- E@trading Version 1.1<br>
- Account registration interface prototype.
- Secure account creation and authentication
- will require a connected backend.
+ E@trading Version 1.2<br>
+ Account registration and authentication interface.
  </p>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+
+const SUPABASE_URL =
+"https://vfmswfhfphtusxcfzqhs.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_pt_o3PnyZtw6rMo8OYckXg_dnx_TnCW";
+
+const supabaseClient = window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
+
 function showForm(form){
+
  document.getElementById('welcome').classList.add('hidden');
  document.getElementById('register').classList.add('hidden');
  document.getElementById('login').classList.add('hidden');
+
  document.getElementById(form).classList.remove('hidden');
 }
+
 async function registerUser(event){
+
  event.preventDefault();
 
  const fullName = document.getElementById('fullname').value.trim();
@@ -158,6 +201,7 @@ async function registerUser(event){
  const email = document.getElementById('email').value.trim();
  const password = document.getElementById('password').value;
  const confirm = document.getElementById('confirm').value;
+
  const message = document.getElementById('registerMessage');
 
  if(password !== confirm){
@@ -167,51 +211,72 @@ async function registerUser(event){
 
  message.textContent = 'Creating your account...';
 
- const { data, error } = await supabaseClient.auth.signUp({
-  email: email,
-  password: password,
-  options: {
-   data: {
-    full_name: fullName,
-    phone: phone
+ try{
+
+  const {data,error} = await supabaseClient.auth.signUp({
+   email:email,
+   password:password,
+   options:{
+    data:{
+     full_name:fullName,
+     phone:phone
+    }
    }
+  });
+
+  if(error){
+   message.textContent = error.message;
+   return;
   }
- });
 
- if(error){
-  message.textContent = error.message;
-  return;
- }
+  message.textContent =
+  'Registration submitted! Check your email for confirmation.';
 
- message.textContent =
-  'Registration submitted! Check your email for a confirmation link.';
-}
+ }catch(error){
+
+  message.textContent = 'Connection error. Please try again.';
 
  }
 
- document.getElementById('registerMessage').textContent=
- 'Registration form validated! Secure account creation will be activated when our backend is connected.';
 }
 
-function loginUser(event){
+async function loginUser(event){
+
  event.preventDefault();
 
- document.getElementById('loginMessage').textContent=
- 'Login interface ready. Secure authentication will be activated when our backend is connected.';
+ const email = document.getElementById('identity').value.trim();
+ const password = document.getElementById('loginPassword').value;
+
+ const message = document.getElementById('loginMessage');
+
+ message.textContent = 'Checking your account...';
+
+ try{
+
+  const {data,error} =
+   await supabaseClient.auth.signInWithPassword({
+    email:email,
+    password:password
+   });
+
+  if(error){
+   message.textContent = error.message;
+   return;
+  }
+
+  message.textContent =
+  'Login successful! Welcome to E@trading.';
+
+ }catch(error){
+
+  message.textContent = 'Connection error. Please try again.';
+
+ }
+
 }
+
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-const SUPABASE_URL = "https://vfmswfhfphtusxcfzqhs.supabase.co";
-const SUPABASE_KEY = ;const SUPABASE_KEY = "sb_publishable_pt_o3PnyZtw6rMo8OYckXg_dnx_TnCW";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-</script>
 </body>
 </html>
 
