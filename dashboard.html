@@ -10,12 +10,14 @@
 
 <style>
 *{box-sizing:border-box}
+
 body{
  margin:0;
  background:#080e1b;
  color:#fff;
  font-family:Arial,sans-serif;
 }
+
 header{
  background:#111b2d;
  padding:18px;
@@ -25,16 +27,38 @@ header{
  flex-wrap:wrap;
  gap:12px;
 }
-.logo{font-size:25px;font-weight:bold;color:#19d6a0}
+
+.logo{
+ font-size:25px;
+ font-weight:bold;
+ color:#19d6a0;
+}
+
 button,select,input{
  padding:12px;
  border:0;
  border-radius:7px;
  font-size:15px;
 }
-button{cursor:pointer;background:#19d6a0;color:#07121b;font-weight:bold}
-.logout{background:#e64c58;color:white}
-main{max-width:1200px;margin:auto;padding:16px}
+
+button{
+ cursor:pointer;
+ background:#19d6a0;
+ color:#07121b;
+ font-weight:bold;
+}
+
+.logout{
+ background:#e64c58;
+ color:white;
+}
+
+main{
+ max-width:1200px;
+ margin:auto;
+ padding:16px;
+}
+
 .card{
  background:#111b2d;
  border:1px solid #25344c;
@@ -42,20 +66,58 @@ main{max-width:1200px;margin:auto;padding:16px}
  padding:17px;
  margin-bottom:18px;
 }
-h2{font-size:19px;margin-top:0}
-.muted{color:#9baac0}
-.balance{font-size:30px;color:#19d6a0;font-weight:bold}
+
+h2{
+ font-size:19px;
+ margin-top:0;
+}
+
+.muted{
+ color:#9baac0;
+}
+
+.balance{
+ font-size:30px;
+ color:#19d6a0;
+ font-weight:bold;
+ overflow-wrap:anywhere;
+}
+
+.portfolio-grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+ gap:12px;
+ margin-top:15px;
+}
+
+.portfolio-box{
+ background:#1c2b42;
+ padding:15px;
+ border-radius:9px;
+}
+
+.portfolio-number{
+ font-size:21px;
+ font-weight:bold;
+ overflow-wrap:anywhere;
+}
+
 .markets{
  display:grid;
  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
  gap:9px;
 }
+
 .market{
  background:#1c2b42;
  color:white;
  border:1px solid #34465f;
 }
-.market.active{border:2px solid #19d6a0}
+
+.market.active{
+ border:2px solid #19d6a0;
+}
+
 .chart-frame{
  width:100%;
  height:480px;
@@ -63,6 +125,7 @@ h2{font-size:19px;margin-top:0}
  border-radius:8px;
  background:#0b1220;
 }
+
 input,select{
  width:100%;
  background:#202e43;
@@ -70,19 +133,56 @@ input,select{
  border:1px solid #40516a;
  margin:7px 0 13px;
 }
-.actions{display:flex;gap:10px}
-.actions button{flex:1}
-.sell{background:#e64c58;color:white}
-table{width:100%;border-collapse:collapse;min-width:550px}
+
+.actions{
+ display:flex;
+ gap:10px;
+}
+
+.actions button{
+ flex:1;
+}
+
+.sell{
+ background:#e64c58;
+ color:white;
+}
+
+table{
+ width:100%;
+ border-collapse:collapse;
+ min-width:650px;
+}
+
 th,td{
  padding:12px 9px;
  border-bottom:1px solid #293950;
  text-align:left;
  font-size:13px;
 }
-.table-wrap{overflow-x:auto}
-.success{color:#19d6a0}
-.error{color:#ff6975}
+
+.table-wrap{
+ overflow-x:auto;
+}
+
+.success{
+ color:#19d6a0;
+}
+
+.error{
+ color:#ff6975;
+}
+
+footer{
+ text-align:center;
+ padding:20px;
+}
+
+@media(max-width:500px){
+ .balance{font-size:25px}
+ .chart-frame{height:380px}
+ header{padding:14px}
+}
 </style>
 </head>
 
@@ -95,6 +195,7 @@ th,td{
 
 <main>
 
+<!-- ACCOUNT SUMMARY -->
 <section class="card">
  <h2>Welcome to E@trading</h2>
  <p class="muted">Your independent trading dashboard</p>
@@ -103,22 +204,75 @@ th,td{
  <p class="muted" id="accountStatus">Loading account...</p>
 </section>
 
+<!-- PORTFOLIO OVERVIEW -->
+<section class="card">
+ <h2>My Portfolio Overview</h2>
+
+ <p class="muted">Total portfolio value</p>
+ <div class="balance" id="portfolioValue">$0.00</div>
+
+ <div class="portfolio-grid">
+
+  <div class="portfolio-box">
+   <p class="muted">Wallet balance</p>
+   <div class="portfolio-number" id="portfolioCash">$0.00</div>
+  </div>
+
+  <div class="portfolio-box">
+   <p class="muted">Assets value</p>
+   <div class="portfolio-number" id="assetsValue">$0.00</div>
+  </div>
+
+  <div class="portfolio-box">
+   <p class="muted">Unrealised profit/loss</p>
+   <div class="portfolio-number" id="portfolioPL">$0.00</div>
+  </div>
+
+ </div>
+
+ <p class="muted">
+ Portfolio figures use illustrative demo prices and are not real brokerage valuations.
+ </p>
+</section>
+
+<!-- MARKET WATCH -->
 <section class="card">
  <h2>Market Watch</h2>
  <p class="muted">Select a market to view its chart.</p>
+
  <div class="markets">
-  <button class="market active" data-symbol="BINANCE:BTCUSDT" data-asset="BTCUSD">Bitcoin</button>
-  <button class="market" data-symbol="BINANCE:ETHUSDT" data-asset="ETHUSD">Ethereum</button>
-  <button class="market" data-symbol="FX:EURUSD" data-asset="EURUSD">EUR/USD</button>
-  <button class="market" data-symbol="FX:GBPUSD" data-asset="GBPUSD">GBP/USD</button>
-  <button class="market" data-symbol="NASDAQ:AAPL" data-asset="AAPL">Apple</button>
-  <button class="market" data-symbol="OANDA:XAUUSD" data-asset="GOLD">Gold</button>
+  <button class="market active"
+   data-symbol="BINANCE:BTCUSDT"
+   data-asset="BTCUSD">Bitcoin</button>
+
+  <button class="market"
+   data-symbol="BINANCE:ETHUSDT"
+   data-asset="ETHUSD">Ethereum</button>
+
+  <button class="market"
+   data-symbol="FX:EURUSD"
+   data-asset="EURUSD">EUR/USD</button>
+
+  <button class="market"
+   data-symbol="FX:GBPUSD"
+   data-asset="GBPUSD">GBP/USD</button>
+
+  <button class="market"
+   data-symbol="NASDAQ:AAPL"
+   data-asset="AAPL">Apple</button>
+
+  <button class="market"
+   data-symbol="OANDA:XAUUSD"
+   data-asset="GOLD">Gold</button>
  </div>
 </section>
 
+<!-- LIVE CHART -->
 <section class="card">
  <h2>Live Market Chart</h2>
+
  <p class="muted" id="chartTitle">Bitcoin / USDT</p>
+
  <iframe
   id="tradingChart"
   class="chart-frame"
@@ -129,11 +283,16 @@ th,td{
  </iframe>
 </section>
 
+<!-- DEMO TRADING -->
 <section class="card">
  <h2>Demo Trading</h2>
- <p class="muted">Practice trades using illustrative prices. No real money is involved.</p>
+
+ <p class="muted">
+ Practice trades using illustrative prices. No real money is involved.
+ </p>
 
  <label>Selected Asset</label>
+
  <select id="asset">
   <option value="BTCUSD">Bitcoin (BTC/USD)</option>
   <option value="ETHUSD">Ethereum (ETH/USD)</option>
@@ -144,7 +303,11 @@ th,td{
  </select>
 
  <label>Quantity</label>
- <input id="quantity" type="number" min="0.000001" step="any" placeholder="Enter quantity">
+ <input id="quantity"
+  type="number"
+  min="0.000001"
+  step="any"
+  placeholder="Enter quantity">
 
  <label>Illustrative demo price</label>
  <input id="price" type="number" readonly>
@@ -153,33 +316,50 @@ th,td{
   <button id="buyBtn">BUY</button>
   <button id="sellBtn" class="sell">SELL</button>
  </div>
+
  <p id="tradeMessage" class="muted"></p>
 </section>
 
+<!-- OPEN POSITIONS -->
 <section class="card">
  <h2>Open Positions</h2>
+
  <div class="table-wrap">
   <table>
    <thead>
-    <tr><th>Asset</th><th>Quantity</th><th>Average Entry</th></tr>
+    <tr>
+     <th>Asset</th>
+     <th>Quantity</th>
+     <th>Average Entry</th>
+     <th>Market Value</th>
+     <th>Profit/Loss</th>
+    </tr>
    </thead>
+
    <tbody id="positions">
-    <tr><td colspan="3">Loading positions...</td></tr>
+    <tr><td colspan="5">Loading positions...</td></tr>
    </tbody>
   </table>
  </div>
 </section>
 
+<!-- TRANSACTION HISTORY -->
 <section class="card">
  <h2>Transaction History</h2>
+
  <div class="table-wrap">
   <table>
    <thead>
     <tr>
-     <th>Asset</th><th>Side</th><th>Quantity</th>
-     <th>Price</th><th>Status</th><th>Date</th>
+     <th>Asset</th>
+     <th>Side</th>
+     <th>Quantity</th>
+     <th>Price</th>
+     <th>Status</th>
+     <th>Date</th>
     </tr>
    </thead>
+
    <tbody id="history">
     <tr><td colspan="6">Loading transactions...</td></tr>
    </tbody>
@@ -187,24 +367,27 @@ th,td{
  </div>
 </section>
 
-<p class="muted" style="text-align:center">
- E@trading © 2026 | Demo Trading Platform
-</p>
-
 </main>
 
-<script>
-const SUPABASE_URL = "https://vfmswfhfphtusxcfzqhs.supabase.co";
-const SUPABASE_KEY = "sb_publishable_pt_o3PnyZtw6rMo8OYckXg_dnx_TnCW";
+<footer class="muted">
+ E@trading © 2026 | Demo Trading Platform
+</footer>
 
-const client = window.supabase.createClient(
+<script>
+const SUPABASE_URL =
+ "https://vfmswfhfphtusxcfzqhs.supabase.co";
+
+const SUPABASE_KEY =
+ "sb_publishable_pt_o3PnyZtw6rMo8OYckXg_dnx_TnCW";
+
+const client=window.supabase.createClient(
  SUPABASE_URL,
  SUPABASE_KEY
 );
 
-let currentUser = null;
+let currentUser=null;
 
-const demoPrices = {
+const demoPrices={
  BTCUSD:95000,
  ETHUSD:3200,
  EURUSD:1.16,
@@ -213,7 +396,7 @@ const demoPrices = {
  GOLD:4000
 };
 
-const assetNames = {
+const assetNames={
  BTCUSD:"Bitcoin / USDT",
  ETHUSD:"Ethereum / USDT",
  EURUSD:"EUR / USD",
@@ -223,36 +406,58 @@ const assetNames = {
 };
 
 function money(value){
- return "$" + Number(value || 0).toLocaleString(
-  "en-US",{minimumFractionDigits:2,maximumFractionDigits:2}
+ return "$"+Number(value||0).toLocaleString(
+  "en-US",
+  {
+   minimumFractionDigits:2,
+   maximumFractionDigits:2
+  }
  );
 }
 
-async function initialize(){
- const {data,error} = await client.auth.getSession();
+function escapeHTML(value){
+ return String(value??"").replace(/[&<>"']/g,c=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#39;"
+ }[c]));
+}
 
- if(error || !data.session){
+// ACCOUNT INITIALIZATION
+async function initialize(){
+
+ const {data,error}=await client.auth.getSession();
+
+ if(error||!data.session){
   window.location.href="index.html";
   return;
  }
 
  currentUser=data.session.user;
 
- document.getElementById("accountStatus").textContent =
-  "Account: " + currentUser.email;
+ document.getElementById("accountStatus").textContent=
+  "Account: "+currentUser.email;
 
  document.getElementById("price").value=demoPrices.BTCUSD;
 
  await refreshDashboard();
 }
 
+// REFRESH ALL DASHBOARD INFORMATION
 async function refreshDashboard(){
+
  await loadBalance();
  await loadPositions();
  await loadHistory();
+ await loadPortfolio();
+
 }
 
+// WALLET BALANCE
 async function loadBalance(){
+
  const {data,error}=await client
   .from("wallets")
   .select("demo_balance")
@@ -265,10 +470,79 @@ async function loadBalance(){
  }
 
  document.getElementById("balance").textContent=
-  money(data ? data.demo_balance : 0);
+  money(data?data.demo_balance:0);
+
 }
 
+// PORTFOLIO OVERVIEW
+async function loadPortfolio(){
+
+ const walletResult=await client
+  .from("wallets")
+  .select("demo_balance")
+  .eq("user_id",currentUser.id)
+  .maybeSingle();
+
+ const positionsResult=await client
+  .from("positions")
+  .select("asset,quantity,average_entry_price")
+  .eq("user_id",currentUser.id);
+
+ if(walletResult.error||positionsResult.error){
+
+  document.getElementById("portfolioValue").textContent="Unavailable";
+  document.getElementById("portfolioCash").textContent="Unavailable";
+  document.getElementById("assetsValue").textContent="Unavailable";
+  document.getElementById("portfolioPL").textContent="Unavailable";
+
+  return;
+ }
+
+ const cash=Number(walletResult.data?.demo_balance||0);
+ const positions=positionsResult.data||[];
+
+ let assetsTotal=0;
+ let unrealisedPL=0;
+
+ positions.forEach(position=>{
+
+  const quantity=Number(position.quantity);
+  const entryPrice=Number(position.average_entry_price);
+  const currentPrice=demoPrices[position.asset];
+
+  if(!Number.isFinite(currentPrice))return;
+
+  assetsTotal+=quantity*currentPrice;
+
+  unrealisedPL+=quantity*(currentPrice-entryPrice);
+
+ });
+
+ const total=cash+assetsTotal;
+
+ document.getElementById("portfolioValue").textContent=
+  money(total);
+
+ document.getElementById("portfolioCash").textContent=
+  money(cash);
+
+ document.getElementById("assetsValue").textContent=
+  money(assetsTotal);
+
+ const plElement=document.getElementById("portfolioPL");
+
+ plElement.textContent=
+  (unrealisedPL>=0?"+":"-")+
+  money(Math.abs(unrealisedPL));
+
+ plElement.style.color=
+  unrealisedPL>=0?"#19d6a0":"#ff6975";
+
+}
+
+// OPEN POSITIONS
 async function loadPositions(){
+
  const {data,error}=await client
   .from("positions")
   .select("asset,quantity,average_entry_price")
@@ -278,25 +552,57 @@ async function loadPositions(){
  const body=document.getElementById("positions");
 
  if(error){
-  body.innerHTML='<tr><td colspan="3">Could not load positions.</td></tr>';
+  body.innerHTML=
+   '<tr><td colspan="5">Could not load positions.</td></tr>';
   return;
  }
 
- if(!data || data.length===0){
-  body.innerHTML='<tr><td colspan="3">No open positions yet.</td></tr>';
+ if(!data||data.length===0){
+  body.innerHTML=
+   '<tr><td colspan="5">No open positions yet.</td></tr>';
   return;
  }
 
- body.innerHTML=data.map(p=>`
-  <tr>
-   <td>${escapeHTML(p.asset)}</td>
-   <td>${Number(p.quantity)}</td>
-   <td>${money(p.average_entry_price)}</td>
-  </tr>
- `).join("");
+ body.innerHTML=data.map(p=>{
+
+  const quantity=Number(p.quantity);
+  const entry=Number(p.average_entry_price);
+  const current=demoPrices[p.asset];
+
+  if(!Number.isFinite(current)){
+   return `
+    <tr>
+     <td>${escapeHTML(p.asset)}</td>
+     <td>${quantity}</td>
+     <td>${money(entry)}</td>
+     <td>Unavailable</td>
+     <td>Unavailable</td>
+    </tr>
+   `;
+  }
+
+  const value=quantity*current;
+  const profit=quantity*(current-entry);
+
+  return `
+   <tr>
+    <td>${escapeHTML(p.asset)}</td>
+    <td>${quantity}</td>
+    <td>${money(entry)}</td>
+    <td>${money(value)}</td>
+    <td class="${profit>=0?"success":"error"}">
+     ${profit>=0?"+":"-"}${money(Math.abs(profit))}
+    </td>
+   </tr>
+  `;
+
+ }).join("");
+
 }
 
+// TRANSACTION HISTORY
 async function loadHistory(){
+
  const {data,error}=await client
   .from("trades")
   .select("*")
@@ -307,41 +613,52 @@ async function loadHistory(){
  const body=document.getElementById("history");
 
  if(error){
-  body.innerHTML='<tr><td colspan="6">Could not load transaction history.</td></tr>';
+  body.innerHTML=
+   '<tr><td colspan="6">Could not load transaction history.</td></tr>';
   return;
  }
 
- if(!data || data.length===0){
-  body.innerHTML='<tr><td colspan="6">No transactions yet.</td></tr>';
+ if(!data||data.length===0){
+  body.innerHTML=
+   '<tr><td colspan="6">No transactions yet.</td></tr>';
   return;
  }
 
  body.innerHTML=data.map(t=>`
+
   <tr>
    <td>${escapeHTML(t.asset)}</td>
    <td>${escapeHTML(t.side)}</td>
    <td>${Number(t.quantity)}</td>
    <td>${money(t.price)}</td>
    <td>${escapeHTML(t.status)}</td>
-   <td>${t.created_at ? new Date(t.created_at).toLocaleString() : ""}</td>
+   <td>
+    ${t.created_at?
+     new Date(t.created_at).toLocaleString():""}
+   </td>
   </tr>
+
  `).join("");
+
 }
 
-function escapeHTML(value){
- return String(value ?? "").replace(/[&<>"']/g,c=>({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
- }[c]));
-}
-
+// BUY AND SELL DEMO TRADES
 async function executeTrade(side){
+
  const asset=document.getElementById("asset").value;
  const quantity=Number(document.getElementById("quantity").value);
  const price=demoPrices[asset];
+
  const message=document.getElementById("tradeMessage");
 
- if(!quantity || quantity<=0){
+ if(!Number.isFinite(quantity)||quantity<=0){
   message.textContent="Enter a valid quantity.";
+  message.className="error";
+  return;
+ }
+
+ if(!Number.isFinite(price)||price<=0){
+  message.textContent="Price unavailable for this asset.";
   message.className="error";
   return;
  }
@@ -350,38 +667,56 @@ async function executeTrade(side){
  message.className="muted";
 
  const {data,error}=await client.rpc("execute_demo_trade",{
+
   p_asset:asset,
   p_side:side,
   p_quantity:quantity,
   p_price:price
+
  });
 
  if(error){
+
   message.textContent="Trade failed: "+error.message;
   message.className="error";
   return;
+
  }
 
- if(data && data.error){
+ if(data&&data.error){
+
   message.textContent="Trade failed: "+data.error;
   message.className="error";
   return;
+
  }
 
  message.textContent="Demo trade completed successfully.";
  message.className="success";
 
  document.getElementById("quantity").value="";
+
  await refreshDashboard();
+
 }
 
+// ASSET SELECTION
 document.getElementById("asset").addEventListener("change",e=>{
- document.getElementById("price").value=demoPrices[e.target.value];
+
+ document.getElementById("price").value=
+  demoPrices[e.target.value];
+
 });
 
+// MARKET SELECTION AND CHART UPDATES
 document.querySelectorAll(".market").forEach(button=>{
+
  button.addEventListener("click",()=>{
-  document.querySelectorAll(".market").forEach(b=>b.classList.remove("active"));
+
+  document.querySelectorAll(".market").forEach(b=>
+   b.classList.remove("active")
+  );
+
   button.classList.add("active");
 
   const symbol=button.dataset.symbol;
@@ -389,29 +724,50 @@ document.querySelectorAll(".market").forEach(button=>{
 
   document.getElementById("asset").value=asset;
   document.getElementById("price").value=demoPrices[asset];
-  document.getElementById("chartTitle").textContent=assetNames[asset];
+
+  document.getElementById("chartTitle").textContent=
+   assetNames[asset];
 
   document.getElementById("tradingChart").src=
    "https://s.tradingview.com/widgetembed/?symbol="+
    encodeURIComponent(symbol)+
    "&interval=60&theme=dark&style=1&locale=en&allow_symbol_change=true&hide_top_toolbar=false&hide_side_toolbar=false";
+
  });
+
 });
 
+// BUY BUTTON
 document.getElementById("buyBtn").addEventListener("click",()=>{
  executeTrade("BUY");
 });
 
+// SELL BUTTON
 document.getElementById("sellBtn").addEventListener("click",()=>{
  executeTrade("SELL");
 });
 
+// LOGOUT
 document.getElementById("logoutBtn").addEventListener("click",async()=>{
+
  await client.auth.signOut();
+
  window.location.href="index.html";
+
 });
 
+// AUTOMATIC LOGIN CHECK
+client.auth.onAuthStateChange((event,session)=>{
+
+ if(event==="SIGNED_OUT"){
+  window.location.href="index.html";
+ }
+
+});
+
+// START DASHBOARD
 initialize();
+
 </script>
 
 </body>
